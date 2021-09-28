@@ -62,3 +62,7 @@ resource "azurerm_public_ip" "LoadBalancerTFPubIP" {
   resource_group_name = azurerm_resource_group.LoadBalancerTFRG.name
   allocation_method   = "Dynamic"
 }
+
+output "output_vm_ip" {
+  value = azurerm_linux_virtual_machine.LoadBalancerTFVM.public_ip_address
+}

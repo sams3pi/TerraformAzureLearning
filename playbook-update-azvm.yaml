@@ -1,0 +1,15 @@
+---
+- name: update and install apache on the Virtual Machine
+  become: yes
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Update the VM
+      apt:
+        upgrade=dist
+        force_apt_get=yes
+    - name: install Apache
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
