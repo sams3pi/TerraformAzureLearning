@@ -13,3 +13,8 @@
         name: apache2
         state: present
         update_cache: yes
+    - name: install CIFS
+      apt:
+        name: cifs-utils
+        state: present
+        update_cache: yes

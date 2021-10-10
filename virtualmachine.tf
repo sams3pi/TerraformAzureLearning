@@ -26,7 +26,7 @@ resource "azurerm_network_interface" "LoadBalancerTFNIC" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.LoadBalancerTFSubnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.LoadBalancerTFPubIP.id
+    public_ip_address_id = azurerm_public_ip.LoadBalancerTFPubIP.id
   }
 }
 
@@ -63,6 +63,60 @@ resource "azurerm_public_ip" "LoadBalancerTFPubIP" {
   allocation_method   = "Dynamic"
 }
 
-output "output_vm_ip" {
+#  -------------------------Second VM
+resource "azurerm_network_interface" "LoadBalancerTFNIC2" {
+  name                = "LoadBalancerTFNIC2"
+  location            = azurerm_resource_group.LoadBalancerTFRG.location
+  resource_group_name = azurerm_resource_group.LoadBalancerTFRG.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.LoadBalancerTFSubnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.LoadBalancerTFPubIP2.id
+  }
+}
+
+resource "azurerm_public_ip" "LoadBalancerTFPubIP2" {
+  name                = "LoadBalancerTFPubIP2"
+  location            = azurerm_resource_group.LoadBalancerTFRG.location
+  resource_group_name = azurerm_resource_group.LoadBalancerTFRG.name
+  allocation_method   = "Dynamic"
+}
+
+resource "azurerm_linux_virtual_machine" "LoadBalancerTFVM2" {
+  name                            = "LoadBalancerTFVM2"
+  resource_group_name             = azurerm_resource_group.LoadBalancerTFRG.name
+  location                        = azurerm_resource_group.LoadBalancerTFRG.location
+  size                            = "Standard_B1s"
+  admin_username                  = "adminuser"
+  admin_password                  = "Lenovo21!"
+  disable_password_authentication = false
+  network_interface_ids = [
+    azurerm_network_interface.LoadBalancerTFNIC2.id,
+  ]
+
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+}
+
+
+# -------------------------------------
+output "output_vm_ip1" {
   value = azurerm_linux_virtual_machine.LoadBalancerTFVM.public_ip_address
 }
+
+output  "output_vm_ip2" {
+  value = azurerm_linux_virtual_machine.LoadBalancerTFVM2.public_ip_address
+}
+
